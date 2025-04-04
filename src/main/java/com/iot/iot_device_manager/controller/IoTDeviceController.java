@@ -45,4 +45,16 @@ public class IoTDeviceController {
         ResponseDTO responseDTO = ioTDeviceService.createDevice(ioTDeviceRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
+
+    /*
+     * Api to update a device
+     * @param device id and ioTDeviceRequestDto
+     * @return responseDTO
+     * */
+    @PutMapping("/{id}")
+    public ResponseEntity<ResponseDTO> updateDevice(@RequestBody IoTDeviceRequestDto ioTDeviceRequestDto, @PathVariable Integer id){
+        ResponseDTO responseDTO = ioTDeviceService.updateDevice(ioTDeviceRequestDto,id);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+    }
+
 }

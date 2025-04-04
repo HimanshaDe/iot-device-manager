@@ -21,7 +21,7 @@ public class IoTDeviceImpl implements IoTDeviceService {
     private IoTDeviceInMemoryRepository ioTDeviceInMemoryRepository;
 
     /*
-     * Api to get a device data by id
+     * Get Device By id method implementation
      * @param - device id
      * @return responseDTO
      * */
@@ -52,7 +52,7 @@ public class IoTDeviceImpl implements IoTDeviceService {
     }
 
     /*
-     * Api to create a new device
+     * Create Device method implementation
      * @param null
      * @return responseDTO
      * */
@@ -81,5 +81,44 @@ public class IoTDeviceImpl implements IoTDeviceService {
             responseDTO.setTimestamp(LocalDateTime.now());
             return responseDTO;
         }
+    }
+
+    /*
+     * Update device method implementation
+     * @param device id and ioTDeviceRequestDto
+     * @return responseDTO
+     * */
+    @Override
+    public ResponseDTO updateDevice(IoTDeviceRequestDto ioTDeviceRequestDto, Integer id) {
+        ResponseDTO responseDTO = new ResponseDTO();
+
+        try{
+            if(!ioTDeviceInMemoryRepository.existsById(id)){
+                responseDTO.setMessage("Iot device not found");
+                responseDTO.setStatus(HttpStatus.NOT_FOUND.value());
+            }else{
+                IoTDevice ioTDevice = new IoTDevice();
+                ioTDevice.setId(id);
+                ioTDevice.setName(ioTDeviceRequestDto.getName());
+                ioTDevice.setStatus(ioTDeviceRequestDto.getStatus());
+                ioTDevice.setType(ioTDeviceRequestDto.getType());
+                ioTDevice.setLastCommunication(ioTDeviceRequestDto.getLastCommunication());
+
+                IoTDevice updatedDevice = ioTDeviceInMemoryRepository.update(ioTDevice);
+
+                responseDTO.setStatus(HttpStatus.OK.value());
+                responseDTO.setMessage("Device updated successfully");
+                responseDTO.setData(updatedDevice);
+                return responseDTO;
+
+            }
+        }catch (Exception e){
+            log.error("Error occurred ");
+            responseDTO.setMessage(e.getMessage());
+            responseDTO.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            responseDTO.setTimestamp(LocalDateTime.now());
+            return responseDTO;
+        }
+        return responseDTO;
     }
 }

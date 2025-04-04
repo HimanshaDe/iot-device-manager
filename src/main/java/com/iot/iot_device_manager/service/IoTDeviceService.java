@@ -7,4 +7,6 @@ public interface IoTDeviceService {
     ResponseDTO getDeviceById(Integer id);
 
     ResponseDTO createDevice(IoTDeviceRequestDto ioTDeviceRequestDto);
+
+    ResponseDTO updateDevice(IoTDeviceRequestDto ioTDeviceRequestDto, Integer id);
 }

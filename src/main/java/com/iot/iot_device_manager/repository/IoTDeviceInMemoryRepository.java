@@ -24,18 +24,8 @@ public class IoTDeviceInMemoryRepository {
     }
 
     public IoTDevice update(IoTDevice ioTDevice){
-    IoTDevice existingDevice = deviceMap.get(ioTDevice.getId());
-    if(existingDevice != null){
-        existingDevice.setName(ioTDevice.getName());
-        existingDevice.setStatus(ioTDevice.getStatus());
-        existingDevice.setType(ioTDevice.getType());
-        existingDevice.setLastCommunication(LocalDateTime.now());
-        deviceMap.put(ioTDevice.getId(),existingDevice);
-        return existingDevice;
-    }else{
-        return null;
-    }
-
+        deviceMap.put(ioTDevice.getId(),ioTDevice);
+        return ioTDevice;
     }
     public void delete(String id){
         deviceMap.remove(id);
