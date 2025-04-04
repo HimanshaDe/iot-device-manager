@@ -1,5 +1,6 @@
 package com.iot.iot_device_manager.service.implementation;
 
+import com.iot.iot_device_manager.dto.IoTDeviceRequestDto;
 import com.iot.iot_device_manager.dto.ResponseDTO;
 import com.iot.iot_device_manager.model.IoTDevice;
 import com.iot.iot_device_manager.repository.IoTDeviceInMemoryRepository;
@@ -41,13 +42,6 @@ public class IoTDeviceImpl implements IoTDeviceService {
          responseDTO.setTimestamp(LocalDateTime.now());
          return responseDTO;
 
-     }catch (MethodArgumentTypeMismatchException e){
-         log.error("Error occurred :" + "Device id invalid");
-         responseDTO.setMessage("Error occurred :" + "Device id invalid");
-         responseDTO.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-         responseDTO.setTimestamp(LocalDateTime.now());
-         return responseDTO;
-
      }catch (Exception e){
          log.error("Error occurred ");
          responseDTO.setMessage(e.getMessage());
@@ -55,5 +49,37 @@ public class IoTDeviceImpl implements IoTDeviceService {
          responseDTO.setTimestamp(LocalDateTime.now());
          return responseDTO;
      }
+    }
+
+    /*
+     * Api to create a new device
+     * @param null
+     * @return responseDTO
+     * */
+    @Override
+    public ResponseDTO createDevice(IoTDeviceRequestDto ioTDeviceRequestDto) {
+        ResponseDTO responseDTO = new ResponseDTO();
+
+        try{
+            IoTDevice ioTDevice = new IoTDevice();
+            ioTDevice.setName(ioTDeviceRequestDto.getName());
+            ioTDevice.setStatus(ioTDeviceRequestDto.getStatus());
+            ioTDevice.setType(ioTDeviceRequestDto.getType());
+            ioTDevice.setLastCommunication(ioTDeviceRequestDto.getLastCommunication());
+            ioTDeviceInMemoryRepository.save(ioTDevice);
+
+            responseDTO.setData(ioTDevice);
+            responseDTO.setMessage("Iot device created Successfully");
+            responseDTO.setStatus(HttpStatus.CREATED.value());
+            responseDTO.setTimestamp(LocalDateTime.now());
+            return responseDTO;
+
+        }catch (Exception e){
+            log.error("Error occurred ");
+            responseDTO.setMessage(e.getMessage());
+            responseDTO.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            responseDTO.setTimestamp(LocalDateTime.now());
+            return responseDTO;
+        }
     }
 }

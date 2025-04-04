@@ -1,16 +1,14 @@
 package com.iot.iot_device_manager.controller;
 
 
+import com.iot.iot_device_manager.dto.IoTDeviceRequestDto;
 import com.iot.iot_device_manager.dto.ResponseDTO;
 import com.iot.iot_device_manager.service.IoTDeviceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 
@@ -35,8 +33,16 @@ public class IoTDeviceController {
             }
             responseDTO = ioTDeviceService.getDeviceById(id);
             return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
-
     }
 
-    
+    /*
+     * Api to create a new device
+     * @param ioTDeviceRequestDto
+     * @return responseDTO
+     * */
+    @PostMapping("/create")
+    public ResponseEntity<ResponseDTO> createDevice(@RequestBody IoTDeviceRequestDto ioTDeviceRequestDto){
+        ResponseDTO responseDTO = ioTDeviceService.createDevice(ioTDeviceRequestDto);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+    }
 }
