@@ -27,7 +27,7 @@ public class IoTDeviceInMemoryRepository {
         deviceMap.put(ioTDevice.getId(),ioTDevice);
         return ioTDevice;
     }
-    public void delete(String id){
+    public void delete(Integer id){
         deviceMap.remove(id);
     }
 

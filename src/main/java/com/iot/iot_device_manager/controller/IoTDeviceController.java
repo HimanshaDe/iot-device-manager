@@ -21,21 +21,6 @@ public class IoTDeviceController {
     private IoTDeviceService ioTDeviceService;
 
     /*
-    * Api to get a device data by id
-    * @param - device id
-    * @return responseDTO
-    * */
-    @GetMapping("/{id}")
-    public ResponseEntity<ResponseDTO> getDeviceById(@PathVariable Integer id){
-        ResponseDTO responseDTO = new ResponseDTO();
-            if (responseDTO.getStatus() == HttpStatus.NOT_FOUND.value()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseDTO);
-            }
-            responseDTO = ioTDeviceService.getDeviceById(id);
-            return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
-    }
-
-    /*
      * Api to create a new device
      * @param ioTDeviceRequestDto
      * @return responseDTO
@@ -47,6 +32,36 @@ public class IoTDeviceController {
     }
 
     /*
+     * Api to get a device data by id
+     * @param - device id
+     * @return responseDTO
+     * */
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseDTO> getDeviceById(@PathVariable Integer id){
+        ResponseDTO responseDTO = new ResponseDTO();
+        if (responseDTO.getStatus() == HttpStatus.NOT_FOUND.value()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseDTO);
+        }
+        responseDTO = ioTDeviceService.getDeviceById(id);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+    }
+
+    /*
+     * Api to get device list
+     * @param - device id
+     * @return responseDTO
+     * */
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseDTO> getDevices(){
+        ResponseDTO responseDTO = new ResponseDTO();
+        if (responseDTO.getStatus() == HttpStatus.NOT_FOUND.value()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseDTO);
+        }
+        responseDTO = ioTDeviceService.getDevices();
+        return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+    }
+
+    /*
      * Api to update a device
      * @param device id and ioTDeviceRequestDto
      * @return responseDTO
@@ -54,6 +69,22 @@ public class IoTDeviceController {
     @PutMapping("/{id}")
     public ResponseEntity<ResponseDTO> updateDevice(@RequestBody IoTDeviceRequestDto ioTDeviceRequestDto, @PathVariable Integer id){
         ResponseDTO responseDTO = ioTDeviceService.updateDevice(ioTDeviceRequestDto,id);
+        return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+    }
+
+    /*
+     * Api to delete a device
+     * @param device id
+     * @return responseDTO
+     * */
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ResponseDTO> deleteDevice(@PathVariable Integer id){
+        ResponseDTO responseDTO = new ResponseDTO();
+        if (responseDTO.getStatus() == HttpStatus.NOT_FOUND.value()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(responseDTO);
+        }
+        responseDTO = ioTDeviceService.deleteDevice(id);
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
 

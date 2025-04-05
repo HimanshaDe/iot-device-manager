@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -120,5 +121,61 @@ public class IoTDeviceImpl implements IoTDeviceService {
             return responseDTO;
         }
         return responseDTO;
+    }
+
+    /*
+     * Delete a device method implementation
+     * @param device id and ioTDeviceRequestDto
+     * @return responseDTO
+     * */
+    @Override
+    public ResponseDTO deleteDevice(Integer id) {
+        ResponseDTO responseDTO = new ResponseDTO();
+        try{
+            IoTDevice ioTDevice = ioTDeviceInMemoryRepository.findById(id);
+            if(ioTDevice == null){
+                responseDTO.setMessage("Iot device not found");
+                responseDTO.setStatus(HttpStatus.NOT_FOUND.value());
+            }else {
+                ioTDeviceInMemoryRepository.delete(id);
+                responseDTO.setData(null);
+                responseDTO.setMessage("Iot device deleted");
+                responseDTO.setStatus(HttpStatus.NOT_FOUND.value());
+            }
+            responseDTO.setTimestamp(LocalDateTime.now());
+            return responseDTO;
+
+        }catch (Exception e){
+            log.error("Error occurred ");
+            responseDTO.setMessage(e.getMessage());
+            responseDTO.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            responseDTO.setTimestamp(LocalDateTime.now());
+            return responseDTO;
+        }
+    }
+
+    @Override
+    public ResponseDTO getDevices() {
+        ResponseDTO responseDTO = new ResponseDTO();
+        try{
+            List<IoTDevice> ioTDevices = ioTDeviceInMemoryRepository.findAll();
+            if(ioTDevices.isEmpty()){
+                responseDTO.setMessage("Iot device not found");
+                responseDTO.setStatus(HttpStatus.NOT_FOUND.value());
+            }else {
+                responseDTO.setData(ioTDevices);
+                responseDTO.setMessage("Iot devices retrieved successfully");
+                responseDTO.setStatus(HttpStatus.NOT_FOUND.value());
+            }
+            responseDTO.setTimestamp(LocalDateTime.now());
+            return responseDTO;
+
+        }catch (Exception e){
+            log.error("Error occurred ");
+            responseDTO.setMessage(e.getMessage());
+            responseDTO.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            responseDTO.setTimestamp(LocalDateTime.now());
+            return responseDTO;
+        }
     }
 }
