@@ -46,8 +46,10 @@ public class IoTDeviceImpl implements IoTDeviceService {
             ioTDevice.setStatus(ioTDeviceRequestDto.getStatus());
             ioTDevice.setType(ioTDeviceRequestDto.getType());
             ioTDevice.setLastCommunication(ioTDeviceRequestDto.getLastCommunication());
+
             ioTDeviceInMemoryRepository.save(ioTDevice);
 
+            log.info("IoTDeviceImpl - device created successfully." + ioTDevice);
             responseDTO.setData(ioTDevice);
             responseDTO.setMessage("Iot device created Successfully");
             responseDTO.setStatus(HttpStatus.CREATED.value());
@@ -70,12 +72,14 @@ public class IoTDeviceImpl implements IoTDeviceService {
      * */
     @Override
     public ResponseDTO getDeviceById(Integer id) {
+        log.info("IoTDeviceImpl.getDeviceById() method accessed.");
         ResponseDTO responseDTO = new ResponseDTO();
 
         try{
             IoTDevice ioTDevice = ioTDeviceInMemoryRepository.findById(id);
             if(ioTDevice == null){
                 responseDTO.setMessage("Iot device not found");
+                log.info("IoTDeviceImpl - Iot device not found " );
                 responseDTO.setStatus(HttpStatus.NOT_FOUND.value());
             }else {
                 // add device for the internal cache for testing
@@ -83,6 +87,7 @@ public class IoTDeviceImpl implements IoTDeviceService {
 
                 responseDTO.setData(ioTDevice);
                 responseDTO.setMessage("Iot device found");
+                log.info("IoTDeviceImpl - device found : " + ioTDevice);
                 responseDTO.setStatus(HttpStatus.OK.value());
             }
             responseDTO.setTimestamp(LocalDateTime.now());
@@ -104,14 +109,17 @@ public class IoTDeviceImpl implements IoTDeviceService {
      * */
     @Override
     public ResponseDTO getDevices() {
+        log.info("IoTDeviceImpl.getDevices() method accessed.");
         ResponseDTO responseDTO = new ResponseDTO();
         try{
             List<IoTDevice> ioTDevices = ioTDeviceInMemoryRepository.findAll();
             if(ioTDevices.isEmpty()){
                 responseDTO.setMessage("Iot devices not found");
+                log.info("IoTDeviceImpl - Iot devices not found " );
                 responseDTO.setStatus(HttpStatus.NOT_FOUND.value());
             }else {
                 responseDTO.setData(ioTDevices);
+                log.info("IoTDeviceImpl - devices found : " + ioTDevices);
                 responseDTO.setMessage("Iot devices retrieved successfully");
                 responseDTO.setStatus(HttpStatus.OK.value());
             }
@@ -134,12 +142,14 @@ public class IoTDeviceImpl implements IoTDeviceService {
      * */
     @Override
     public ResponseDTO updateDevice(IoTDeviceRequestDto ioTDeviceRequestDto, Integer id) {
+        log.info("IoTDeviceImpl.updateDevice() method accessed.");
         ResponseDTO responseDTO = new ResponseDTO();
 
         try{
             Boolean deviceExists = ioTDeviceInMemoryRepository.existsById(id);
             if(!deviceExists){
                 responseDTO.setMessage("Iot device not found");
+                log.info("IoTDeviceImpl - Iot device not found " );
                 responseDTO.setStatus(HttpStatus.NOT_FOUND.value());
             }else{
                 IoTDevice ioTDevice = new IoTDevice();
@@ -153,6 +163,7 @@ public class IoTDeviceImpl implements IoTDeviceService {
 
                 responseDTO.setStatus(HttpStatus.OK.value());
                 responseDTO.setMessage("Device updated successfully");
+                log.info("IoTDeviceImpl - device updated successfully : " + updatedDevice);
                 responseDTO.setData(ioTDevice);
                 responseDTO.setTimestamp(LocalDateTime.now());
                 return responseDTO;
@@ -175,17 +186,20 @@ public class IoTDeviceImpl implements IoTDeviceService {
      * */
     @Override
     public ResponseDTO deleteDevice(Integer id) {
+        log.info("IoTDeviceImpl.deleteDevice() method accessed.");
         ResponseDTO responseDTO = new ResponseDTO();
         try{
             IoTDevice ioTDevice = ioTDeviceInMemoryRepository.findById(id);
             if(ioTDevice == null){
                 responseDTO.setMessage("Iot device not found");
+                log.info("IoTDeviceImpl - Iot device not found " );
                 responseDTO.setStatus(HttpStatus.NOT_FOUND.value());
             }else {
                 ioTDeviceInMemoryRepository.delete(id);
                 responseDTO.setData(null);
                 responseDTO.setMessage("Iot device deleted");
-                responseDTO.setStatus(HttpStatus.NOT_FOUND.value());
+                log.info("IoTDeviceImpl - device deleted : " + id);
+                responseDTO.setStatus(HttpStatus.OK.value());
             }
             responseDTO.setTimestamp(LocalDateTime.now());
             return responseDTO;
@@ -198,7 +212,6 @@ public class IoTDeviceImpl implements IoTDeviceService {
             return responseDTO;
         }
     }
-
 
     public IoTDevice getFromCache(Integer id) {
         return deviceCache.get(id);

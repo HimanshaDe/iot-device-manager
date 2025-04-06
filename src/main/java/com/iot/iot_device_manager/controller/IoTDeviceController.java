@@ -29,7 +29,7 @@ public class IoTDeviceController {
      * @return responseDTO
      * */
     @PostMapping("/create")
-    public ResponseEntity<ResponseDTO> createDevice(@RequestBody IoTDeviceRequestDto ioTDeviceRequestDto){
+    public ResponseEntity<ResponseDTO> createDevice(@RequestBody IoTDeviceRequestDto ioTDeviceRequestDto) {
         log.info("IoTDeviceController.createDevice() method accessed with device creation request : " + ioTDeviceRequestDto);
         ResponseDTO responseDTO = ioTDeviceService.createDevice(ioTDeviceRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseDTO);
@@ -41,7 +41,7 @@ public class IoTDeviceController {
      * @return responseDTO
      * */
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseDTO> getDeviceById(@PathVariable Integer id){
+    public ResponseEntity<ResponseDTO> getDeviceById(@PathVariable Integer id) {
         log.info("IoTDeviceController.getDeviceById() method accessed with device id : " + id);
         ResponseDTO responseDTO = new ResponseDTO();
         if (responseDTO.getStatus() == HttpStatus.NOT_FOUND.value()) {
@@ -57,7 +57,7 @@ public class IoTDeviceController {
      * @return responseDTO
      * */
     @GetMapping()
-    public ResponseEntity<ResponseDTO> getDevices(){
+    public ResponseEntity<ResponseDTO> getDevices() {
         log.info("IoTDeviceController.getDevices() method accessed.");
         ResponseDTO responseDTO = new ResponseDTO();
         if (responseDTO.getStatus() == HttpStatus.NOT_FOUND.value()) {
@@ -73,10 +73,9 @@ public class IoTDeviceController {
      * @return responseDTO
      * */
     @PutMapping("/{id}")
-    public ResponseEntity<ResponseDTO> updateDevice(@RequestBody IoTDeviceRequestDto ioTDeviceRequestDto, @PathVariable Integer id){
-        log.info("IoTDeviceController.updateDevice() method accessed " +
-                "with device modification request : " + ioTDeviceRequestDto + " and id : " + id);
-        ResponseDTO responseDTO = ioTDeviceService.updateDevice(ioTDeviceRequestDto,id);
+    public ResponseEntity<ResponseDTO> updateDevice(@RequestBody IoTDeviceRequestDto ioTDeviceRequestDto, @PathVariable Integer id) {
+        log.info("IoTDeviceController.updateDevice() method accessed " + "with device modification request : " + ioTDeviceRequestDto + " and id : " + id);
+        ResponseDTO responseDTO = ioTDeviceService.updateDevice(ioTDeviceRequestDto, id);
         return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
     }
 
@@ -87,7 +86,7 @@ public class IoTDeviceController {
      * */
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseDTO> deleteDevice(@PathVariable Integer id){
+    public ResponseEntity<ResponseDTO> deleteDevice(@PathVariable Integer id) {
         log.info("IoTDeviceController.deleteDevice() method accessed with device id : " + id);
         ResponseDTO responseDTO = new ResponseDTO();
         if (responseDTO.getStatus() == HttpStatus.NOT_FOUND.value()) {
