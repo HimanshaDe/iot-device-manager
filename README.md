@@ -18,6 +18,9 @@ This is a simple Spring Boot Application that provide RESTFUL APIS for manage IO
 - Lombok
 - Swagger (http://localhost:8080/swagger-ui/index.html)
 
+# Data Storing method
+No database required. Data storing using in memory hashMap.
+
 # Set-up Instructions
 
 ### Prerequisites
