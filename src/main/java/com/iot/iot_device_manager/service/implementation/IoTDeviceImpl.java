@@ -137,7 +137,8 @@ public class IoTDeviceImpl implements IoTDeviceService {
         ResponseDTO responseDTO = new ResponseDTO();
 
         try{
-            if(!ioTDeviceInMemoryRepository.existsById(id)){
+            Boolean deviceExists = ioTDeviceInMemoryRepository.existsById(id);
+            if(!deviceExists){
                 responseDTO.setMessage("Iot device not found");
                 responseDTO.setStatus(HttpStatus.NOT_FOUND.value());
             }else{
@@ -152,7 +153,8 @@ public class IoTDeviceImpl implements IoTDeviceService {
 
                 responseDTO.setStatus(HttpStatus.OK.value());
                 responseDTO.setMessage("Device updated successfully");
-                responseDTO.setData(updatedDevice);
+                responseDTO.setData(ioTDevice);
+                responseDTO.setTimestamp(LocalDateTime.now());
                 return responseDTO;
 
             }

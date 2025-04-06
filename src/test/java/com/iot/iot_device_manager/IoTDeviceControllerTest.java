@@ -48,6 +48,8 @@ public class IoTDeviceControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private IoTDeviceInMemoryRepository ioTDeviceInMemoryRepository;
     @Test
     void testCreateDevice() throws Exception {
         IoTDeviceRequestDto requestDto = new IoTDeviceRequestDto();
@@ -83,7 +85,6 @@ public class IoTDeviceControllerTest {
 
         Integer id = 1;
         IoTDevice device = new IoTDevice(id, "Device 1", "Temperature Sensor", true, LocalDateTime.now());
-
         Mockito.when(mockRepo.findById(id)).thenReturn(device);
 
         ResponseDTO response = service.getDeviceById(id);
@@ -97,18 +98,16 @@ public class IoTDeviceControllerTest {
     }
 
     @Test
-    void testGetAllDevices() {
-        // Mock repository
+    void testGetAllDevices() throws Exception {
+
         IoTDeviceInMemoryRepository mockRepo = Mockito.mock(IoTDeviceInMemoryRepository.class);
 
-        // Create service with mock repository
         IoTDeviceImpl service = new IoTDeviceImpl(mockRepo);
 
-        // Test data: create some devices
-        Integer id1 = 1;
+        Integer id1 = 2;
         IoTDevice device1 = new IoTDevice(id1, "Device 1", "Temperature Sensor", true, LocalDateTime.now());
 
-        Integer id2 = 2;
+        Integer id2 = 3;
         IoTDevice device2 = new IoTDevice(id2, "Device 2", "Humidity Sensor", true, LocalDateTime.now());
 
         List<IoTDevice> deviceList = Arrays.asList(device1, device2);
@@ -117,13 +116,39 @@ public class IoTDeviceControllerTest {
 
         ResponseDTO response = service.getDevices();
 
-        Assertions.assertEquals(200, response.getStatus()); // Status should be 200 OK
-        Assertions.assertEquals("Iot devices retrieved successfully", response.getMessage()); // Message should indicate devices were found
+        Assertions.assertEquals(200, response.getStatus());
+        Assertions.assertEquals("Iot devices retrieved successfully", response.getMessage());
 
         List<IoTDevice> devices = (List<IoTDevice>) response.getData();
-        Assertions.assertEquals(2, devices.size()); // Verify there are 2 devices in the list
-        Assertions.assertEquals("Device 1", devices.get(0).getName()); // Verify the name of the first device
-        Assertions.assertEquals("Device 2", devices.get(1).getName()); // Verify the name of the second device
+        Assertions.assertEquals(2, devices.size());
+        Assertions.assertEquals("Device 1", devices.get(0).getName());
+        Assertions.assertEquals("Device 2", devices.get(1).getName());
     }
 
+    @Test
+    void testUpdateDevice() throws Exception{
+        IoTDeviceInMemoryRepository mockRepo = Mockito.mock(IoTDeviceInMemoryRepository.class);
+
+        IoTDeviceImpl service = new IoTDeviceImpl(mockRepo);
+
+        Integer id =1;
+        IoTDevice device = new IoTDevice(id, "Device 1", "Temperature Sensor", true, LocalDateTime.now());
+
+        Mockito.when(mockRepo.existsById(id)).thenReturn(true);
+        Mockito.when(mockRepo.findById(id)).thenReturn(device);
+
+        IoTDeviceRequestDto updateRequest = new IoTDeviceRequestDto();
+        updateRequest.setName("Updated Device");
+        updateRequest.setStatus(false);
+        updateRequest.setType("Humidity Sensor");
+        updateRequest.setLastCommunication(LocalDateTime.now());
+
+        ResponseDTO responseDTO = service.updateDevice(updateRequest,id);
+
+        Assertions.assertEquals(200, responseDTO.getStatus());
+        Assertions.assertEquals("Device updated successfully",responseDTO.getMessage());
+        Assertions.assertEquals("Updated Device", ((IoTDevice) responseDTO.getData()).getName());
+        Assertions.assertEquals("Humidity Sensor",((IoTDevice) responseDTO.getData()).getType());
+
+    }
 }
