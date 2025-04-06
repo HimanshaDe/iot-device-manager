@@ -1,28 +1,22 @@
 package com.iot.iot_device_manager;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.iot.iot_device_manager.controller.IoTDeviceController;
 import com.iot.iot_device_manager.dto.IoTDeviceRequestDto;
 import com.iot.iot_device_manager.dto.ResponseDTO;
 import com.iot.iot_device_manager.model.IoTDevice;
 import com.iot.iot_device_manager.repository.IoTDeviceInMemoryRepository;
 import com.iot.iot_device_manager.service.IoTDeviceService;
 import com.iot.iot_device_manager.service.implementation.IoTDeviceImpl;
-import org.junit.jupiter.api.*;
-import org.mockito.InjectMocks;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -30,7 +24,6 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -50,6 +43,7 @@ public class IoTDeviceControllerTest {
 
     @Autowired
     private IoTDeviceInMemoryRepository ioTDeviceInMemoryRepository;
+
     @Test
     void testCreateDevice() throws Exception {
         IoTDeviceRequestDto requestDto = new IoTDeviceRequestDto();
@@ -126,12 +120,12 @@ public class IoTDeviceControllerTest {
     }
 
     @Test
-    void testUpdateDevice() throws Exception{
+    void testUpdateDevice() throws Exception {
         IoTDeviceInMemoryRepository mockRepo = Mockito.mock(IoTDeviceInMemoryRepository.class);
 
         IoTDeviceImpl service = new IoTDeviceImpl(mockRepo);
 
-        Integer id =1;
+        Integer id = 1;
         IoTDevice device = new IoTDevice(id, "Device 1", "Temperature Sensor", true, LocalDateTime.now());
 
         Mockito.when(mockRepo.existsById(id)).thenReturn(true);
@@ -143,12 +137,29 @@ public class IoTDeviceControllerTest {
         updateRequest.setType("Humidity Sensor");
         updateRequest.setLastCommunication(LocalDateTime.now());
 
-        ResponseDTO responseDTO = service.updateDevice(updateRequest,id);
+        ResponseDTO responseDTO = service.updateDevice(updateRequest, id);
 
         Assertions.assertEquals(200, responseDTO.getStatus());
-        Assertions.assertEquals("Device updated successfully",responseDTO.getMessage());
+        Assertions.assertEquals("Device updated successfully", responseDTO.getMessage());
         Assertions.assertEquals("Updated Device", ((IoTDevice) responseDTO.getData()).getName());
-        Assertions.assertEquals("Humidity Sensor",((IoTDevice) responseDTO.getData()).getType());
+        Assertions.assertEquals("Humidity Sensor", ((IoTDevice) responseDTO.getData()).getType());
+    }
 
+    @Test
+    void testDeleteDevice() throws Exception {
+        IoTDeviceInMemoryRepository mockRepo = Mockito.mock(IoTDeviceInMemoryRepository.class);
+
+        IoTDeviceImpl service = new IoTDeviceImpl(mockRepo);
+
+        Integer id = 1;
+        IoTDevice device = new IoTDevice(id, "Device 1", "Temperature Sensor", true, LocalDateTime.now());
+
+        Mockito.when(mockRepo.existsById(id)).thenReturn(true);
+        Mockito.when(mockRepo.findById(id)).thenReturn(device);
+
+        ResponseDTO responseDTO = service.deleteDevice(id);
+
+        Assertions.assertEquals(200, responseDTO.getStatus());
+        Assertions.assertEquals("Iot device deleted", responseDTO.getMessage());
     }
 }
