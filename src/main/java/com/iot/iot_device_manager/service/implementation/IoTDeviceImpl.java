@@ -9,48 +9,26 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
 public class IoTDeviceImpl implements IoTDeviceService {
 
+
     @Autowired
     private IoTDeviceInMemoryRepository ioTDeviceInMemoryRepository;
 
-    /*
-     * Get Device By id method implementation
-     * @param - device id
-     * @return responseDTO
-     * */
-    @Override
-    public ResponseDTO getDeviceById(Integer id) {
-        ResponseDTO responseDTO = new ResponseDTO();
+    private final Map<Integer, IoTDevice> deviceCache = new HashMap<>();
 
-     try{
-         IoTDevice ioTDevice = ioTDeviceInMemoryRepository.findById(id);
-         if(ioTDevice == null){
-             responseDTO.setMessage("Iot device not found");
-             responseDTO.setStatus(HttpStatus.NOT_FOUND.value());
-         }else {
-             responseDTO.setData(ioTDevice);
-             responseDTO.setMessage("Iot device found");
-             responseDTO.setStatus(HttpStatus.NOT_FOUND.value());
-         }
-         responseDTO.setTimestamp(LocalDateTime.now());
-         return responseDTO;
-
-     }catch (Exception e){
-         log.error("Error occurred ");
-         responseDTO.setMessage(e.getMessage());
-         responseDTO.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-         responseDTO.setTimestamp(LocalDateTime.now());
-         return responseDTO;
-     }
+    public IoTDeviceImpl(IoTDeviceInMemoryRepository repository) {
+        this.ioTDeviceInMemoryRepository = repository;
     }
+
 
     /*
      * Create Device method implementation
@@ -59,6 +37,7 @@ public class IoTDeviceImpl implements IoTDeviceService {
      * */
     @Override
     public ResponseDTO createDevice(IoTDeviceRequestDto ioTDeviceRequestDto) {
+        log.info("IoTDeviceImpl.createDevice() method accessed.");
         ResponseDTO responseDTO = new ResponseDTO();
 
         try{
@@ -72,6 +51,70 @@ public class IoTDeviceImpl implements IoTDeviceService {
             responseDTO.setData(ioTDevice);
             responseDTO.setMessage("Iot device created Successfully");
             responseDTO.setStatus(HttpStatus.CREATED.value());
+            responseDTO.setTimestamp(LocalDateTime.now());
+            return responseDTO;
+
+        }catch (Exception e){
+            log.error("Error occurred ");
+            responseDTO.setMessage(e.getMessage());
+            responseDTO.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            responseDTO.setTimestamp(LocalDateTime.now());
+            return responseDTO;
+        }
+    }
+
+    /*
+     * Get Device By id method implementation
+     * @param - device id
+     * @return responseDTO
+     * */
+    @Override
+    public ResponseDTO getDeviceById(Integer id) {
+        ResponseDTO responseDTO = new ResponseDTO();
+
+        try{
+            IoTDevice ioTDevice = ioTDeviceInMemoryRepository.findById(id);
+            if(ioTDevice == null){
+                responseDTO.setMessage("Iot device not found");
+                responseDTO.setStatus(HttpStatus.NOT_FOUND.value());
+            }else {
+                // add device for the internal cache for testing
+                deviceCache.put(id, ioTDevice);
+
+                responseDTO.setData(ioTDevice);
+                responseDTO.setMessage("Iot device found");
+                responseDTO.setStatus(HttpStatus.OK.value());
+            }
+            responseDTO.setTimestamp(LocalDateTime.now());
+            return responseDTO;
+
+        }catch (Exception e){
+            log.error("Error occurred ");
+            responseDTO.setMessage(e.getMessage());
+            responseDTO.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
+            responseDTO.setTimestamp(LocalDateTime.now());
+            return responseDTO;
+        }
+    }
+
+    /*
+     * get all devices method implementation
+     * @param device id and ioTDeviceRequestDto
+     * @return responseDTO
+     * */
+    @Override
+    public ResponseDTO getDevices() {
+        ResponseDTO responseDTO = new ResponseDTO();
+        try{
+            List<IoTDevice> ioTDevices = ioTDeviceInMemoryRepository.findAll();
+            if(ioTDevices.isEmpty()){
+                responseDTO.setMessage("Iot devices not found");
+                responseDTO.setStatus(HttpStatus.NOT_FOUND.value());
+            }else {
+                responseDTO.setData(ioTDevices);
+                responseDTO.setMessage("Iot devices retrieved successfully");
+                responseDTO.setStatus(HttpStatus.OK.value());
+            }
             responseDTO.setTimestamp(LocalDateTime.now());
             return responseDTO;
 
@@ -154,28 +197,8 @@ public class IoTDeviceImpl implements IoTDeviceService {
         }
     }
 
-    @Override
-    public ResponseDTO getDevices() {
-        ResponseDTO responseDTO = new ResponseDTO();
-        try{
-            List<IoTDevice> ioTDevices = ioTDeviceInMemoryRepository.findAll();
-            if(ioTDevices.isEmpty()){
-                responseDTO.setMessage("Iot device not found");
-                responseDTO.setStatus(HttpStatus.NOT_FOUND.value());
-            }else {
-                responseDTO.setData(ioTDevices);
-                responseDTO.setMessage("Iot devices retrieved successfully");
-                responseDTO.setStatus(HttpStatus.NOT_FOUND.value());
-            }
-            responseDTO.setTimestamp(LocalDateTime.now());
-            return responseDTO;
 
-        }catch (Exception e){
-            log.error("Error occurred ");
-            responseDTO.setMessage(e.getMessage());
-            responseDTO.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            responseDTO.setTimestamp(LocalDateTime.now());
-            return responseDTO;
-        }
+    public IoTDevice getFromCache(Integer id) {
+        return deviceCache.get(id);
     }
 }
